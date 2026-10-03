@@ -78,93 +78,113 @@
             </div>
         </main>
 
-        <!-- COLUMN 3: MULTI-ASSET TRADING TERMINAL & CORPO SHOP -->
+        <!-- COLUMN 3: THE EXPANSION NAVIGATION MODULE -->
         <aside class="panel shop-panel">
-            <!-- EXPANDED TRADING PORTFOLIO -->
-            <h2>📈 Trading Terminal</h2>
-            <div class="shop-list multi-market-list" style="max-height: 220px; margin-bottom: 10px;">
-                <!-- Asset 1: ByteCoin -->
-                <div class="market-row">
-                    <div class="market-info">
-                        <span class="stock-name">🪙 ByteCoin (BTC)</span>
-                        <span class="stock-price" id="btc-price">$100</span>
+            <!-- TAB NAVIGATION TABS -->
+            <div class="tab-navigation">
+                <button id="tab-btn-shop" class="tab-nav-btn active-tab">🛒 Operations</button>
+                <button id="tab-btn-runes" class="tab-nav-btn">🔮 Runes & Glyphs</button>
+            </div>
+
+            <!-- TAB CONTENT A: THE SHOP & TRADING DECK -->
+            <div id="tab-content-shop" class="tab-view-pane">
+                <h2>📈 Trading Terminal</h2>
+                <div class="shop-list multi-market-list" style="max-height: 180px; margin-bottom: 10px;">
+                    <div class="market-row">
+                        <div class="market-info">
+                            <span class="stock-name">🪙 ByteCoin (BTC)</span>
+                            <span class="stock-price" id="btc-price">$100</span>
+                        </div>
+                        <div class="market-meta">Owned: <span id="btc-owned">0</span></div>
+                        <div class="market-trade-btns">
+                            <button id="buy-btc-btn" class="buy-btn compact">Buy 1</button>
+                            <button id="sell-btc-btn" class="buy-btn compact sell">Sell All</button>
+                        </div>
                     </div>
-                    <div class="market-meta">Owned: <span id="btc-owned">0</span></div>
-                    <div class="market-trade-btns">
-                        <button id="buy-btc-btn" class="buy-btn compact">Buy 1</button>
-                        <button id="sell-btc-btn" class="buy-btn compact sell">Sell All</button>
+                    <div class="market-row">
+                        <div class="market-info">
+                            <span class="stock-name">🟢 Nvidia Stock (NVDA)</span>
+                            <span class="stock-price" id="nvda-price">$350</span>
+                        </div>
+                        <div class="market-meta">Owned: <span id="nvda-owned">0</span></div>
+                        <div class="market-trade-btns">
+                            <button id="buy-nvda-btn" class="buy-btn compact">Buy 1</button>
+                            <button id="sell-nvda-btn" class="buy-btn compact sell">Sell All</button>
+                        </div>
+                    </div>
+                    <div class="market-row">
+                        <div class="market-info">
+                            <span class="stock-name">🐕 MemeCoin (MEME)</span>
+                            <span class="stock-price" id="meme-price">$10</span>
+                        </div>
+                        <div class="market-meta">Owned: <span id="meme-owned">0</span></div>
+                        <div class="market-trade-btns">
+                            <button id="buy-meme-btn" class="buy-btn compact">Buy 1</button>
+                            <button id="sell-meme-btn" class="buy-btn compact sell">Sell All</button>
+                        </div>
                     </div>
                 </div>
-                <!-- Asset 2: Nvidia Stock -->
-                <div class="market-row">
-                    <div class="market-info">
-                        <span class="stock-name">🟢 Nvidia Stock (NVDA)</span>
-                        <span class="stock-price" id="nvda-price">$350</span>
+
+                <hr class="divider" style="margin: 5px 0 10px 0;">
+
+                <h2>🛒 Corporate Upgrades</h2>
+                <div class="shop-item multiplier">
+                    <div class="item-details">
+                        <span class="item-name">Keyboard Upgrade</span>
+                        <span class="item-cost">Cost: $<span id="click-upgrade-cost">50</span></span>
                     </div>
-                    <div class="market-meta">Owned: <span id="nvda-owned">0</span></div>
-                    <div class="market-trade-btns">
-                        <button id="buy-nvda-btn" class="buy-btn compact">Buy 1</button>
-                        <button id="sell-nvda-btn" class="buy-btn compact sell">Sell All</button>
-                    </div>
+                    <button id="buy-click-upgrade-btn" class="buy-btn">Upgrade Click (+1)</button>
                 </div>
-                <!-- Asset 3: MemeCoin -->
-                <div class="market-row">
-                    <div class="market-info">
-                        <span class="stock-name">🐕 MemeCoin (MEME)</span>
-                        <span class="stock-price" id="meme-price">$10</span>
+
+                <hr class="divider" style="margin: 10px 0;">
+
+                <div class="shop-list">
+                    <div class="shop-item">
+                        <div class="item-details">
+                            <span class="item-name">Junior Developer</span>
+                            <span class="item-cost">Cost: $<span id="dev-cost">15</span></span>
+                        </div>
+                        <button id="buy-dev-btn" class="buy-btn">Hire (+1/s)</button>
                     </div>
-                    <div class="market-meta">Owned: <span id="meme-owned">0</span></div>
-                    <div class="market-trade-btns">
-                        <button id="buy-meme-btn" class="buy-btn compact">Buy 1</button>
-                        <button id="sell-meme-btn" class="buy-btn compact sell">Sell All</button>
+                    <div class="shop-item">
+                        <div class="item-details">
+                            <span class="item-name">Tech Lead</span>
+                            <span class="item-cost">Cost: $<span id="lead-cost">200</span></span>
+                        </div>
+                        <button id="buy-lead-btn" class="buy-btn">Hire (+15/s)</button>
+                    </div>
+                    <div class="shop-item">
+                        <div class="item-details">
+                            <span class="item-name">AI Compute Server</span>
+                            <span class="item-cost">Cost: $<span id="server-cost">1500</span></span>
+                        </div>
+                        <button id="buy-server-btn" class="buy-btn">Boot Up (+100/s)</button>
                     </div>
                 </div>
             </div>
 
-            <hr class="divider" style="margin: 5px 0 15px 0;">
-
-            <h2>🛒 Corporate Upgrades</h2>
-            <!-- CLICK MULTIPLIER UPGRADE -->
-            <div class="shop-item multiplier">
-                <div class="item-details">
-                    <span class="item-name">Keyboard Upgrade</span>
-                    <span class="item-cost">Cost: $<span id="click-upgrade-cost">50</span></span>
-                </div>
-                <button id="buy-click-upgrade-btn" class="buy-btn">Upgrade Click (+1)</button>
-            </div>
-
-            <hr class="divider">
-
-            <!-- AUTOMATION SHOP ITEMS -->
-            <div class="shop-list">
-                <div class="shop-item">
-                    <div class="item-details">
-                        <span class="item-name">Junior Developer</span>
-                        <span class="item-cost">Cost: $<span id="dev-cost">15</span></span>
+            <!-- TAB CONTENT B: RUNES & GLYPHS BUFF MATRIX -->
+            <div id="tab-content-runes" class="tab-view-pane hidden">
+                <h2>🔮 Mystic Data Relics</h2>
+                <p style="font-size:12px; color:#8a9fc4; margin:-5px 0 15px 0;">Forge algorithms to amplify your core baseline stats.</p>
+                
+                <div class="shop-list">
+                    <!-- RUNE CARD -->
+                    <div class="rune-card-item">
+                        <div class="rune-header">
+                            <span class="rune-title">⚡ Matrix Click Rune</span>
+                            <span class="rune-stats">Level: <span id="rune-lvl">0</span> (+<span id="rune-power">0</span>% Click Power)</span>
+                        </div>
+                        <div class="rune-action-bar">
+                            <span class="item-cost">Cost: $<span id="rune-cost">500</span></span>
+                            <button id="forge-rune-btn" class="buy-btn rune-btn">Forge Rune</button>
+                        </div>
                     </div>
-                    <button id="buy-dev-btn" class="buy-btn">Hire (+1/s)</button>
-                </div>
 
-                <div class="shop-item">
-                    <div class="item-details">
-                        <span class="item-name">Tech Lead</span>
-                        <span class="item-cost">Cost: $<span id="lead-cost">200</span></span>
-                    </div>
-                    <button id="buy-lead-btn" class="buy-btn">Hire (+15/s)</button>
-                </div>
-
-                <div class="shop-item">
-                    <div class="item-details">
-                        <span class="item-name">AI Compute Server</span>
-                        <span class="item-cost">Cost: $<span id="server-cost">1500</span></span>
-                    </div>
-                    <button id="buy-server-btn" class="buy-btn">Boot Up (+100/s)</button>
-                </div>
-            </div>
-        </aside>
-
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+                    <!-- GLYPH CARD -->
+                    <div class="rune-card-item" style="border-color: #a855f7;">
+                        <div class="rune-header">
+                            <span class="rune-title" style="color:#a855f7;">🌀 Chronos Code Glyph</span>
+                            <span class="rune-stats">Level: <span id="glyph-lvl">0</span> (+<span id="glyph-power">0</span>% Passive MPS)</span>
+                        </div>
+                        <div class="rune-action-bar">

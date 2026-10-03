@@ -13,13 +13,19 @@ let gameData = {
     leadCost: 200,
     serverCost: 1500,
 
-    // Stocks/Crypto Engine
+    // Stocks Portfolio Tracker
     btcOwned: 0,
     nvdaOwned: 0,
     memeOwned: 0,
 
-    // Prestige Module
+    // Prestige Variables
     prestigeChips: 0,
+
+    // Runes & Glyphs Booster Levels Data Block
+    runeLevel: 0,
+    runeCost: 500,
+    glyphLevel: 0,
+    glyphCost: 1000,
 
     achievements: {
         firstCode: false,
@@ -27,11 +33,9 @@ let gameData = {
         cryptoWhale: false
     },
     
-    // Time Tracking stamp
     lastSavedTime: Date.now()
 };
 
-// Asset Tracker Prices
 let stockPrices = { btc: 100, nvda: 350, meme: 10 };
 
 // Gather DOM nodes
@@ -48,15 +52,56 @@ const serverCostDisplay = document.getElementById('server-cost');
 const actionZone = document.getElementById('action-zone');
 const clickBtn = document.getElementById('click-btn');
 
-// Prestige Elements
 const chipsOwnedDisplay = document.getElementById('chips-owned');
 const chipsPendingDisplay = document.getElementById('chips-pending');
 const prestigeBtn = document.getElementById('prestige-btn');
 
-// Manual Action Handler
+// Runes & Glyphs Display Targets
+const runeLvlDisplay = document.getElementById('rune-lvl');
+const runePowerDisplay = document.getElementById('rune-power');
+const runeCostDisplay = document.getElementById('rune-cost');
+const glyphLvlDisplay = document.getElementById('glyph-lvl');
+const glyphPowerDisplay = document.getElementById('glyph-power');
+const glyphCostDisplay = document.getElementById('glyph-cost');
+
+// --- TAB SWITCH LOGIC COUPLING ---
+const tabBtnShop = document.getElementById('tab-btn-shop');
+const tabBtnRunes = document.getElementById('tab-btn-runes');
+const tabContentShop = document.getElementById('tab-content-shop');
+const tabContentRunes = document.getElementById('tab-content-runes');
+
+tabBtnShop.addEventListener('click', () => {
+    tabBtnShop.classList.add('active-tab');
+    tabBtnRunes.classList.remove('active-tab');
+    tabContentShop.classList.remove('hidden');
+    tabContentRunes.classList.add('hidden');
+});
+
+tabBtnRunes.addEventListener('click', () => {
+    tabBtnRunes.classList.add('active-tab');
+    tabBtnShop.classList.remove('active-tab');
+    tabContentRunes.classList.remove('hidden');
+    tabContentShop.classList.add('hidden');
+});
+
+// Core Mathematical Amplification Hooks
+function getClickMultiplier() {
+    // Each rune level awards +25% click power stacked
+    return 1.0 + (gameData.runeLevel * 0.25);
+}
+
+function getPassiveMultiplier() {
+    // Each glyph level awards +15% passive MPS production stacked
+    return 1.0 + (gameData.glyphLevel * 0.15);
+}
+
+function getPrestigeMultiplier() {
+    return 1.0 + (gameData.prestigeChips * 0.20);
+}
+
+// Manual Click Trigger
 clickBtn.addEventListener('click', (e) => {
-    let prestigeBonus = 1.0 + (gameData.prestigeChips * 0.20);
-    let earned = Math.floor(gameData.moneyPerClick * gameData.bonusMultiplier * prestigeBonus);
+    let earned = Math.floor(gameData.moneyPerClick * gameData.bonusMultiplier * getPrestigeMultiplier() * getClickMultiplier());
     gameData.money += earned;
     gameData.totalEarned += earned;
     
@@ -82,7 +127,7 @@ function createFloatingText(e, text) {
     setTimeout(() => floater.remove(), 800);
 }
 
-// Store Purchases Upgrades Logistics
+// Shop Upgrades Purchasing
 document.getElementById('buy-click-upgrade-btn').addEventListener('click', () => {
     if (gameData.money >= gameData.clickUpgradeCost) {
         gameData.money -= gameData.clickUpgradeCost;
@@ -123,7 +168,26 @@ document.getElementById('buy-server-btn').addEventListener('click', () => {
     }
 });
 
-// Advanced Trading Portfolio Action Hooks
+// Runes & Glyphs Forging Mechanics Hooks
+document.getElementById('forge-rune-btn').addEventListener('click', () => {
+    if (gameData.money >= gameData.runeCost) {
+        gameData.money -= gameData.runeCost;
+        gameData.runeLevel++;
+        gameData.runeCost = Math.floor(gameData.runeCost * 2.2);
+        updateDisplay();
+    }
+});
+
+document.getElementById('forge-glyph-btn').addEventListener('click', () => {
+    if (gameData.money >= gameData.glyphCost) {
+        gameData.money -= gameData.glyphCost;
+        gameData.glyphLevel++;
+        gameData.glyphCost = Math.floor(gameData.glyphCost * 2.5);
+        updateDisplay();
+    }
+});
+
+// Markets Trading Action Controllers
 function setupMarketTrade(asset, buyId, sellId) {
     document.getElementById(buyId).addEventListener('click', () => {
         if (gameData.money >= stockPrices[asset]) {
@@ -149,7 +213,6 @@ setupMarketTrade('nvda', 'buy-nvda-btn', 'sell-nvda-btn');
 setupMarketTrade('meme', 'buy-meme-btn', 'sell-meme-btn');
 
 function updateMarketPrices() {
-    // Generate distinct random swings for variety
     stockPrices.btc = Math.max(10, Math.floor(stockPrices.btc * (1 + (Math.random() * 40 - 20) / 100)));
     stockPrices.nvda = Math.max(50, Math.floor(stockPrices.nvda * (1 + (Math.random() * 26 - 12) / 100)));
     stockPrices.meme = Math.max(1, Math.floor(stockPrices.meme * (1 + (Math.random() * 120 - 55) / 100)));
@@ -159,12 +222,9 @@ function updateMarketPrices() {
     document.getElementById('meme-price').innerText = `$${stockPrices.meme}`;
 }
 
-// Prestige Logic Engine
+// Prestige Calculations
 function calculatePendingChips() {
-    if (gameData.totalEarned < 10000) {
-        return 0;
-    }
-    // Math logic calculation formula: Based on total overall cash accumulated 
+    if (gameData.totalEarned < 10000) return 0;
     let totalChipsCapable = Math.floor(Math.sqrt(gameData.totalEarned / 10000));
     let pending = Math.max(0, totalChipsCapable - gameData.prestigeChips);
     
@@ -182,32 +242,28 @@ function calculatePendingChips() {
 
 prestigeBtn.addEventListener('click', () => {
     let pending = calculatePendingChips();
-    if (pending > 0) {
-        if (confirm(`Are you ready to liquidate your tech empire? You will claim ${pending} Golden Microchips, resetting your cash and workers, but speeding up future progress permanently!`)) {
-            gameData.prestigeChips += pending;
-            
-            // Clean Wipe Base Stats Except Prestige and Achievements Counters
-            gameData.money = 0;
-            gameData.moneyPerSecond = 0;
-            gameData.moneyPerClick = 1;
-            gameData.totalStaff = 0;
-            gameData.clickUpgradeCost = 50;
-            gameData.devCost = 15;
-            gameData.leadCost = 200;
-            gameData.serverCost = 1500;
-            gameData.btcOwned = 0;
-            gameData.nvdaOwned = 0;
-            gameData.memeOwned = 0;
-
-            calculatePendingChips();
-            checkAchievements();
-            saveGame();
-            updateDisplay();
-        }
+    if (pending > 0 && confirm(`Liquidate company for ${pending} Golden Microchips?`)) {
+        gameData.prestigeChips += pending;
+        gameData.money = 0;
+        gameData.moneyPerSecond = 0;
+        gameData.moneyPerClick = 1;
+        gameData.totalStaff = 0;
+        gameData.clickUpgradeCost = 50;
+        gameData.devCost = 15;
+        gameData.leadCost = 200;
+        gameData.serverCost = 1500;
+        gameData.btcOwned = 0;
+        gameData.nvdaOwned = 0;
+        gameData.memeOwned = 0;
+        
+        // Note: Runes and Glyphs survive standard Prestige resets for deep layer builds!
+        calculatePendingChips();
+        checkAchievements();
+        saveGame();
+        updateDisplay();
     }
 });
 
-// Accomplishments Checks
 function checkAchievements() {
     let unlocked = 0;
     if (!gameData.achievements.firstCode && gameData.totalEarned >= 100) gameData.achievements.firstCode = true;
@@ -224,64 +280,62 @@ function checkAchievements() {
 function toggleAchVisual(id) {
     const card = document.getElementById(id);
     if(card && card.classList.contains('locked')) {
-        card.classList.remove('locked');
-        card.classList.add('unlocked');
-    }
+card.classList.remove('locked');
+card.classList.add('unlocked');
 }
-
-// Master Render Value Engine
+}
+// Master Render Value Engine Update Screen
 function updateDisplay() {
-    let prestigeBonus = 1.0 + (gameData.prestigeChips * 0.20);
-    gameData.gameMps = Math.floor(gameData.moneyPerSecond * gameData.bonusMultiplier * prestigeBonus);
-
-    moneyDisplay.innerText = gameData.money;
-    mpsDisplay.innerText = gameData.gameMps;
-    mpcDisplay.innerText = Math.floor(gameData.moneyPerClick * gameData.bonusMultiplier * prestigeBonus);
-    bonusDisplay.innerText = Math.round(((gameData.bonusMultiplier * prestigeBonus) - 1) * 100);
-    
-    clickUpgradeCostDisplay.innerText = gameData.clickUpgradeCost;
-    devCostDisplay.innerText = gameData.devCost;
-    leadCostDisplay.innerText = gameData.leadCost;
-    serverCostDisplay.innerText = gameData.serverCost;
-
-    document.getElementById('btc-owned').innerText = gameData.btcOwned;
-    document.getElementById('nvda-owned').innerText = gameData.nvdaOwned;
-    document.getElementById('meme-owned').innerText = gameData.memeOwned;
-
-    chipsOwnedDisplay.innerText = gameData.prestigeChips;
-    chipsPendingDisplay.innerText = calculatePendingChips();
+let structuralMultiplier = gameData.bonusMultiplier * getPrestigeMultiplier();
+gameData.gameMps = Math.floor(gameData.moneyPerSecond * structuralMultiplier * getPassiveMultiplier());
+moneyDisplay.innerText = gameData.money;
+mpsDisplay.innerText = gameData.gameMps;
+mpcDisplay.innerText = Math.floor(gameData.moneyPerClick * structuralMultiplier * getClickMultiplier());
+bonusDisplay.innerText = Math.round(((structuralMultiplier * getPassiveMultiplier() * getClickMultiplier()) - 1) * 100);
+clickUpgradeCostDisplay.innerText = gameData.clickUpgradeCost;
+devCostDisplay.innerText = gameData.devCost;
+leadCostDisplay.innerText = gameData.leadCost;
+serverCostDisplay.innerText = gameData.serverCost;
+document.getElementById('btc-owned').innerText = gameData.btcOwned;
+document.getElementById('nvda-owned').innerText = gameData.nvdaOwned;
+document.getElementById('meme-owned').innerText = gameData.memeOwned;
+chipsOwnedDisplay.innerText = gameData.prestigeChips;
+chipsPendingDisplay.innerText = calculatePendingChips();
+// Sync Runes Pane Displays
+runeLvlDisplay.innerText = gameData.runeLevel;
+runePowerDisplay.innerText = gameData.runeLevel * 25;
+runeCostDisplay.innerText = gameData.runeCost;
+glyphLvlDisplay.innerText = gameData.glyphLevel;
+glyphPowerDisplay.innerText = gameData.glyphLevel * 15;
+glyphCostDisplay.innerText = gameData.glyphCost;
 }
-
-// Data Serialization Storage Hook Mechanisms
+// IO Save Engines
 document.getElementById('save-btn').addEventListener('click', saveGame);
 document.getElementById('reset-btn').addEventListener('click', () => {
-    if (confirm("Reset everything completely?")) {
-        localStorage.removeItem("siliconEmpireUltraSave");
-        location.reload();
-    }
-});
-
-function saveGame() {
-    gameData.lastSavedTime = Date.now();
-    localStorage.setItem("siliconEmpireUltraSave", JSON.stringify(gameData));
+if (confirm("Reset everything completely?")) {
+localStorage.removeItem("siliconEmpireUltraSave");
+location.reload();
 }
-
+});
+function saveGame() {
+gameData.lastSavedTime = Date.now();
+localStorage.setItem("siliconEmpireUltraSave", JSON.stringify(gameData));
+}
 function loadGame() {
-    let saved = localStorage.getItem("siliconEmpireUltraSave");
-    if (saved !== null) {
-        gameData = JSON.parse(saved);
-        
-        // Calculate Offline Time Generation Engine
+let saved = localStorage.getItem("siliconEmpireUltraSave");
+if (saved !== null) {
+gameData = JSON.parse(saved);
+// Fill missing values in older save states gracefully
+if(gameData.runeLevel === undefined) { gameData.runeLevel = 0; gameData.runeCost = 500; }
+if(gameData.glyphLevel === undefined) { gameData.glyphLevel = 0; gameData.glyphCost = 1000; }
 let timeAwayMs = Date.now() - gameData.lastSavedTime;
 let timeAwaySec = Math.floor(timeAwayMs / 1000);
 checkAchievements();
-let prestigeBonus = 1.0 + (gameData.prestigeChips * 0.20);
-let calculatedMps = Math.floor(gameData.moneyPerSecond * gameData.bonusMultiplier * prestigeBonus);
+let calculatedMps = Math.floor(gameData.moneyPerSecond * gameData.bonusMultiplier * getPrestigeMultiplier() * getPassiveMultiplier());
 if (timeAwaySec > 10 && calculatedMps > 0) {
 let passiveOfflineEarnings = timeAwaySec * calculatedMps;
 gameData.money += passiveOfflineEarnings;
 gameData.totalEarned += passiveOfflineEarnings;
-// Pop open welcoming modal overlay module window
 document.getElementById('offline-cash-amount').innerText = passiveOfflineEarnings;
 document.getElementById('offline-modal').classList.remove('hidden');
 }
@@ -292,12 +346,21 @@ updateDisplay();
 document.getElementById('close-modal-btn').addEventListener('click', () => {
 document.getElementById('offline-modal').classList.add('hidden');
 });
-// Setup Operational Routine loops
+// Precise Decimal Accumulator Clock Fix Loop Engine
+let decimalAccumulator = 0;
 setInterval(() => {
-gameData.money += Math.floor(gameData.gameMps / 10);
+let exactEarningsPerTick = gameData.gameMps / 10;
+decimalAccumulator += exactEarningsPerTick;
+let wholeDollarsToGive = Math.floor(decimalAccumulator);
+if (wholeDollarsToGive > 0) {
+gameData.money += wholeDollarsToGive;
+gameData.totalEarned += wholeDollarsToGive;
+decimalAccumulator -= wholeDollarsToGive;
+}
+calculatePendingChips();
 updateDisplay();
 }, 100);
-setInterval(updateMarketPrices, 3500); // Ticks markets every 3.5 seconds
-setInterval(saveGame, 10000);         // Auto backups save profile states every 10s
+setInterval(updateMarketPrices, 3500);
+setInterval(saveGame, 10000);
 loadGame();
 updateDisplay();
