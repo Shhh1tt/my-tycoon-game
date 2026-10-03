@@ -2,28 +2,39 @@
 let gameData = {
     money: 0,
     moneyPerSecond: 0,
+    gameMps: 0,
     moneyPerClick: 1,
     totalEarned: 0,
     totalStaff: 0,
-    bonusMultiplier: 1.0, // 1.0 means 100% normal income
+    bonusMultiplier: 1.0,
 
     clickUpgradeCost: 50,
     devCost: 15,
     leadCost: 200,
     serverCost: 1500,
 
-    byteCoinsOwned: 0,
+    // Stocks/Crypto Engine
+    btcOwned: 0,
+    nvdaOwned: 0,
+    memeOwned: 0,
+
+    // Prestige Module
+    prestigeChips: 0,
+
     achievements: {
         firstCode: false,
         techStartup: false,
         cryptoWhale: false
-    }
+    },
+    
+    // Time Tracking stamp
+    lastSavedTime: Date.now()
 };
 
-// Market Engine Variable
-let byteCoinPrice = 100;
+// Asset Tracker Prices
+let stockPrices = { btc: 100, nvda: 350, meme: 10 };
 
-// Gather DOM targets
+// Gather DOM nodes
 const moneyDisplay = document.getElementById('money-display');
 const mpsDisplay = document.getElementById('mps-display');
 const mpcDisplay = document.getElementById('mpc-display');
@@ -34,20 +45,24 @@ const devCostDisplay = document.getElementById('dev-cost');
 const leadCostDisplay = document.getElementById('lead-cost');
 const serverCostDisplay = document.getElementById('server-cost');
 
-const coinPriceDisplay = document.getElementById('coin-price');
-const coinOwnedDisplay = document.getElementById('coin-owned');
-
-const clickBtn = document.getElementById('click-btn');
 const actionZone = document.getElementById('action-zone');
+const clickBtn = document.getElementById('click-btn');
 
-// Manual Action + Floating Visual System
+// Prestige Elements
+const chipsOwnedDisplay = document.getElementById('chips-owned');
+const chipsPendingDisplay = document.getElementById('chips-pending');
+const prestigeBtn = document.getElementById('prestige-btn');
+
+// Manual Action Handler
 clickBtn.addEventListener('click', (e) => {
-    let earned = Math.floor(gameData.moneyPerClick * gameData.bonusMultiplier);
+    let prestigeBonus = 1.0 + (gameData.prestigeChips * 0.20);
+    let earned = Math.floor(gameData.moneyPerClick * gameData.bonusMultiplier * prestigeBonus);
     gameData.money += earned;
     gameData.totalEarned += earned;
     
     createFloatingText(e, `+$${earned}`);
     checkAchievements();
+    calculatePendingChips();
     updateDisplay();
 });
 
@@ -56,7 +71,6 @@ function createFloatingText(e, text) {
     floater.className = 'floating-number';
     floater.innerText = text;
 
-    // Calculate coordinate space relative to action-zone
     const rect = actionZone.getBoundingClientRect();
     const x = e.clientX - rect.left - 20;
     const y = e.clientY - rect.top - 20;
@@ -65,14 +79,10 @@ function createFloatingText(e, text) {
     floater.style.top = `${y}px`;
 
     actionZone.appendChild(floater);
-
-    // Wipe from memory after animation ends
-    setTimeout(() => {
-        floater.remove();
-    }, 800);
+    setTimeout(() => floater.remove(), 800);
 }
 
-// Shop Purchasing Logistics
+// Store Purchases Upgrades Logistics
 document.getElementById('buy-click-upgrade-btn').addEventListener('click', () => {
     if (gameData.money >= gameData.clickUpgradeCost) {
         gameData.money -= gameData.clickUpgradeCost;
@@ -113,61 +123,105 @@ document.getElementById('buy-server-btn').addEventListener('click', () => {
     }
 });
 
-// ByteCoin Live Crypto Market Mechanics
-document.getElementById('buy-coin-btn').addEventListener('click', () => {
-    if (gameData.money >= byteCoinPrice) {
-        gameData.money -= byteCoinPrice;
-        gameData.byteCoinsOwned += 1;
-        updateDisplay();
-    }
-});
+// Advanced Trading Portfolio Action Hooks
+function setupMarketTrade(asset, buyId, sellId) {
+    document.getElementById(buyId).addEventListener('click', () => {
+        if (gameData.money >= stockPrices[asset]) {
+            gameData.money -= stockPrices[asset];
+            gameData[`${asset}Owned`]++;
+            updateDisplay();
+        }
+    });
+    document.getElementById(sellId).addEventListener('click', () => {
+        if (gameData[`${asset}Owned`] > 0) {
+            let payout = gameData[`${asset}Owned`] * stockPrices[asset];
+            gameData.money += payout;
+            gameData.totalEarned += payout;
+            gameData[`${asset}Owned`] = 0;
+            checkAchievements();
+            calculatePendingChips();
+            updateDisplay();
+        }
+    });
+}
+setupMarketTrade('btc', 'buy-btc-btn', 'sell-btc-btn');
+setupMarketTrade('nvda', 'buy-nvda-btn', 'sell-nvda-btn');
+setupMarketTrade('meme', 'buy-meme-btn', 'sell-meme-btn');
 
-document.getElementById('sell-coin-btn').addEventListener('click', () => {
-    if (gameData.byteCoinsOwned > 0) {
-        let returnCash = gameData.byteCoinsOwned * byteCoinPrice;
-        gameData.money += returnCash;
-        gameData.totalEarned += returnCash;
-        gameData.byteCoinsOwned = 0;
-        checkAchievements();
-        updateDisplay();
-    }
-});
+function updateMarketPrices() {
+    // Generate distinct random swings for variety
+    stockPrices.btc = Math.max(10, Math.floor(stockPrices.btc * (1 + (Math.random() * 40 - 20) / 100)));
+    stockPrices.nvda = Math.max(50, Math.floor(stockPrices.nvda * (1 + (Math.random() * 26 - 12) / 100)));
+    stockPrices.meme = Math.max(1, Math.floor(stockPrices.meme * (1 + (Math.random() * 120 - 55) / 100)));
 
-function updateMarketPrice() {
-    // Generate random swing between -25% and +30%
-    let changePercent = (Math.random() * 55 - 25) / 100;
-    byteCoinPrice = Math.floor(byteCoinPrice * (1 + changePercent));
-    
-    // Prevent price crashing to zero
-    if (byteCoinPrice < 10) byteCoinPrice = 10;
-    
-    coinPriceDisplay.innerText = `$${byteCoinPrice}`;
+    document.getElementById('btc-price').innerText = `$${stockPrices.btc}`;
+    document.getElementById('nvda-price').innerText = `$${stockPrices.nvda}`;
+    document.getElementById('meme-price').innerText = `$${stockPrices.meme}`;
 }
 
-// Accomplishments System
+// Prestige Logic Engine
+function calculatePendingChips() {
+    if (gameData.totalEarned < 10000) {
+        return 0;
+    }
+    // Math logic calculation formula: Based on total overall cash accumulated 
+    let totalChipsCapable = Math.floor(Math.sqrt(gameData.totalEarned / 10000));
+    let pending = Math.max(0, totalChipsCapable - gameData.prestigeChips);
+    
+    if (pending > 0) {
+        prestigeBtn.classList.remove('locked');
+        prestigeBtn.classList.add('ready');
+        prestigeBtn.innerText = `Prestige Now! (+${pending} Chips)`;
+    } else {
+        prestigeBtn.classList.remove('ready');
+        prestigeBtn.classList.add('locked');
+        prestigeBtn.innerText = "Sell Company (Req. $10k)";
+    }
+    return pending;
+}
+
+prestigeBtn.addEventListener('click', () => {
+    let pending = calculatePendingChips();
+    if (pending > 0) {
+        if (confirm(`Are you ready to liquidate your tech empire? You will claim ${pending} Golden Microchips, resetting your cash and workers, but speeding up future progress permanently!`)) {
+            gameData.prestigeChips += pending;
+            
+            // Clean Wipe Base Stats Except Prestige and Achievements Counters
+            gameData.money = 0;
+            gameData.moneyPerSecond = 0;
+            gameData.moneyPerClick = 1;
+            gameData.totalStaff = 0;
+            gameData.clickUpgradeCost = 50;
+            gameData.devCost = 15;
+            gameData.leadCost = 200;
+            gameData.serverCost = 1500;
+            gameData.btcOwned = 0;
+            gameData.nvdaOwned = 0;
+            gameData.memeOwned = 0;
+
+            calculatePendingChips();
+            checkAchievements();
+            saveGame();
+            updateDisplay();
+        }
+    }
+});
+
+// Accomplishments Checks
 function checkAchievements() {
-    let unlockedCount = 0;
+    let unlocked = 0;
+    if (!gameData.achievements.firstCode && gameData.totalEarned >= 100) gameData.achievements.firstCode = true;
+    if (!gameData.achievements.techStartup && gameData.totalStaff >= 5) gameData.achievements.techStartup = true;
+    if (!gameData.achievements.cryptoWhale && gameData.totalEarned >= 5000) gameData.achievements.cryptoWhale = true;
 
-    if (!gameData.achievements.firstCode && gameData.totalEarned >= 100) {
-        gameData.achievements.firstCode = true;
-    }
-    if (!gameData.achievements.techStartup && gameData.totalStaff >= 5) {
-        gameData.achievements.techStartup = true;
-    }
-    if (!gameData.achievements.cryptoWhale && gameData.totalEarned >= 5000) {
-        gameData.achievements.cryptoWhale = true;
-    }
+    if (gameData.achievements.firstCode) { toggleAchVisual('ach-1'); unlocked++; }
+    if (gameData.achievements.techStartup) { toggleAchVisual('ach-2'); unlocked++; }
+    if (gameData.achievements.cryptoWhale) { toggleAchVisual('ach-3'); unlocked++; }
 
-    // Process unlocked cards styles and bonuses
-    if (gameData.achievements.firstCode) { updateAchCard('ach-1'); unlockedCount++; }
-    if (gameData.achievements.techStartup) { updateAchCard('ach-2'); unlockedCount++; }
-    if (gameData.achievements.cryptoWhale) { updateAchCard('ach-3'); unlockedCount++; }
-
-    // Every unlocked milestone gives +10% boost stacked
-    gameData.bonusMultiplier = 1.0 + (unlockedCount * 0.1);
+    gameData.bonusMultiplier = 1.0 + (unlocked * 0.1);
 }
 
-function updateAchCard(id) {
+function toggleAchVisual(id) {
     const card = document.getElementById(id);
     if(card && card.classList.contains('locked')) {
         card.classList.remove('locked');
@@ -175,53 +229,75 @@ function updateAchCard(id) {
     }
 }
 
-// Render values on elements
+// Master Render Value Engine
 function updateDisplay() {
+    let prestigeBonus = 1.0 + (gameData.prestigeChips * 0.20);
+    gameData.gameMps = Math.floor(gameData.moneyPerSecond * gameData.bonusMultiplier * prestigeBonus);
+
     moneyDisplay.innerText = gameData.money;
-    mpsDisplay.innerText = Math.floor(gameData.moneyPerSecond * gameData.bonusMultiplier);
-    mpcDisplay.innerText = Math.floor(gameData.moneyPerClick * gameData.bonusMultiplier);
-    bonusDisplay.innerText = Math.round((gameData.bonusMultiplier - 1) * 100);
+    mpsDisplay.innerText = gameData.gameMps;
+    mpcDisplay.innerText = Math.floor(gameData.moneyPerClick * gameData.bonusMultiplier * prestigeBonus);
+    bonusDisplay.innerText = Math.round(((gameData.bonusMultiplier * prestigeBonus) - 1) * 100);
     
     clickUpgradeCostDisplay.innerText = gameData.clickUpgradeCost;
     devCostDisplay.innerText = gameData.devCost;
     leadCostDisplay.innerText = gameData.leadCost;
     serverCostDisplay.innerText = gameData.serverCost;
 
-    coinOwnedDisplay.innerText = gameData.byteCoinsOwned;
+    document.getElementById('btc-owned').innerText = gameData.btcOwned;
+    document.getElementById('nvda-owned').innerText = gameData.nvdaOwned;
+    document.getElementById('meme-owned').innerText = gameData.memeOwned;
+
+    chipsOwnedDisplay.innerText = gameData.prestigeChips;
+    chipsPendingDisplay.innerText = calculatePendingChips();
 }
 
-// Core Storage Automation
+// Data Serialization Storage Hook Mechanisms
 document.getElementById('save-btn').addEventListener('click', saveGame);
 document.getElementById('reset-btn').addEventListener('click', () => {
-    if (confirm("Reset company matrix? All progress will disappear!")) {
-        localStorage.removeItem("siliconEmpireProSave");
+    if (confirm("Reset everything completely?")) {
+        localStorage.removeItem("siliconEmpireUltraSave");
         location.reload();
     }
 });
 
 function saveGame() {
-    localStorage.setItem("siliconEmpireProSave", JSON.stringify(gameData));
+    gameData.lastSavedTime = Date.now();
+    localStorage.setItem("siliconEmpireUltraSave", JSON.stringify(gameData));
 }
 
 function loadGame() {
-    let saved = localStorage.getItem("siliconEmpireProSave");
+    let saved = localStorage.getItem("siliconEmpireUltraSave");
     if (saved !== null) {
         gameData = JSON.parse(saved);
-        checkAchievements();
-        updateDisplay();
-    }
+        
+        // Calculate Offline Time Generation Engine
+let timeAwayMs = Date.now() - gameData.lastSavedTime;
+let timeAwaySec = Math.floor(timeAwayMs / 1000);
+checkAchievements();
+let prestigeBonus = 1.0 + (gameData.prestigeChips * 0.20);
+let calculatedMps = Math.floor(gameData.moneyPerSecond * gameData.bonusMultiplier * prestigeBonus);
+if (timeAwaySec > 10 && calculatedMps > 0) {
+let passiveOfflineEarnings = timeAwaySec * calculatedMps;
+gameData.money += passiveOfflineEarnings;
+gameData.totalEarned += passiveOfflineEarnings;
+// Pop open welcoming modal overlay module window
+document.getElementById('offline-cash-amount').innerText = passiveOfflineEarnings;
+document.getElementById('offline-modal').classList.remove('hidden');
 }
-
-// Core Clock Loops
+calculatePendingChips();
+updateDisplay();
+}
+}
+document.getElementById('close-modal-btn').addEventListener('click', () => {
+document.getElementById('offline-modal').classList.add('hidden');
+});
+// Setup Operational Routine loops
 setInterval(() => {
-    gameData.money += Math.floor((gameData.moneyPerSecond * gameData.bonusMultiplier) / 10);
-    updateDisplay();
-}, 100); // 10 ticks per second for smooth generation visuals
-
-setInterval(updateMarketPrice, 4000); // Cryptomarket changes value every 4s
-setInterval(saveGame, 15000);        // Backup auto-save engine running every 15s
-
-// Initialize State Setup
+gameData.money += Math.floor(gameData.gameMps / 10);
+updateDisplay();
+}, 100);
+setInterval(updateMarketPrices, 3500); // Ticks markets every 3.5 seconds
+setInterval(saveGame, 10000);         // Auto backups save profile states every 10s
 loadGame();
 updateDisplay();
-

@@ -3,14 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Silicon Empire Tycoon Pro</title>
+    <title>Silicon Empire Tycoon Ultra</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- OFFLINE EARNINGS POPUP MODAL -->
+    <div id="offline-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2>Welcome Back, CEO! 🏢</h2>
+            <p>While you were away, your development team was grinding around the clock.</p>
+            <div class="offline-revenue-box">
+                <p class="label">Revenue Earned</p>
+                <p class="value" style="color: #00ff88">+$<span id="offline-cash-amount">0</span></p>
+            </div>
+            <button id="close-modal-btn" class="buy-btn" style="width: 100%; padding: 12px; margin-top: 15px;">Collect Earnings</button>
+        </div>
+    </div>
+
     <div class="game-dashboard">
         
-        <!-- COLUMN 1: STATS & UTILITIES -->
+        <!-- COLUMN 1: STATS, PRESTIGE & UTILITIES -->
         <aside class="panel side-panel">
             <h2>📊 Enterprise Stats</h2>
             <div class="stat-box">
@@ -24,17 +37,15 @@
                 <p class="value-sub" style="color:#00ff88">Bonus: <span id="bonus-display">0</span>%</p>
             </div>
 
-            <!-- CRYPTO/STOCK MARKET TERMINAL -->
-            <div class="market-box">
-                <h3>💸 ByteCoin Market</h3>
-                <div class="market-stats">
-                    <p>Price: <span id="coin-price" style="font-weight:bold;color:#ffcd00">$100</span></p>
-                    <p>Owned: <span id="coin-owned">0</span></p>
+            <!-- PRESTIGE MATRIX HUB -->
+            <div class="prestige-box">
+                <h3>🌌 Quantum Prestige Matrix</h3>
+                <p style="font-size: 13px; color: #8a9fc4; margin: 4px 0;">Microchips give a permanent <strong style="color:#ff00ea">+20%</strong> cash multiplier.</p>
+                <div class="prestige-stats">
+                    <p>Current Chips: <span id="chips-owned" style="font-weight:bold; color:#ff00ea">0</span></p>
+                    <p>Pending Chips: <span id="chips-pending" style="font-weight:bold; color:#00f0ff">0</span></p>
                 </div>
-                <div class="market-actions">
-                    <button id="buy-coin-btn" class="util-btn market-btn">Buy 1</button>
-                    <button id="sell-coin-btn" class="util-btn market-btn">Sell All</button>
-                </div>
+                <button id="prestige-btn" class="prestige-core-btn locked">Sell Company (Req. $10k)</button>
             </div>
             
             <div class="utility-buttons">
@@ -43,10 +54,10 @@
             </div>
         </aside>
 
-        <!-- COLUMN 2: CORE ACTION & ACHIEVEMENTS -->
+        <!-- COLUMN 2: CORE ACTION & MILESTONES -->
         <main class="panel main-panel">
             <header>
-                <h1>Silicon Empire Pro</h1>
+                <h1>Silicon Empire Ultra</h1>
                 <p class="subtitle">Click to code your way to billions</p>
             </header>
             
@@ -67,10 +78,52 @@
             </div>
         </main>
 
-        <!-- COLUMN 3: THE EXPANSION SHOP -->
+        <!-- COLUMN 3: MULTI-ASSET TRADING TERMINAL & CORPO SHOP -->
         <aside class="panel shop-panel">
+            <!-- EXPANDED TRADING PORTFOLIO -->
+            <h2>📈 Trading Terminal</h2>
+            <div class="shop-list multi-market-list" style="max-height: 220px; margin-bottom: 10px;">
+                <!-- Asset 1: ByteCoin -->
+                <div class="market-row">
+                    <div class="market-info">
+                        <span class="stock-name">🪙 ByteCoin (BTC)</span>
+                        <span class="stock-price" id="btc-price">$100</span>
+                    </div>
+                    <div class="market-meta">Owned: <span id="btc-owned">0</span></div>
+                    <div class="market-trade-btns">
+                        <button id="buy-btc-btn" class="buy-btn compact">Buy 1</button>
+                        <button id="sell-btc-btn" class="buy-btn compact sell">Sell All</button>
+                    </div>
+                </div>
+                <!-- Asset 2: Nvidia Stock -->
+                <div class="market-row">
+                    <div class="market-info">
+                        <span class="stock-name">🟢 Nvidia Stock (NVDA)</span>
+                        <span class="stock-price" id="nvda-price">$350</span>
+                    </div>
+                    <div class="market-meta">Owned: <span id="nvda-owned">0</span></div>
+                    <div class="market-trade-btns">
+                        <button id="buy-nvda-btn" class="buy-btn compact">Buy 1</button>
+                        <button id="sell-nvda-btn" class="buy-btn compact sell">Sell All</button>
+                    </div>
+                </div>
+                <!-- Asset 3: MemeCoin -->
+                <div class="market-row">
+                    <div class="market-info">
+                        <span class="stock-name">🐕 MemeCoin (MEME)</span>
+                        <span class="stock-price" id="meme-price">$10</span>
+                    </div>
+                    <div class="market-meta">Owned: <span id="meme-owned">0</span></div>
+                    <div class="market-trade-btns">
+                        <button id="buy-meme-btn" class="buy-btn compact">Buy 1</button>
+                        <button id="sell-meme-btn" class="buy-btn compact sell">Sell All</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider" style="margin: 5px 0 15px 0;">
+
             <h2>🛒 Corporate Upgrades</h2>
-            
             <!-- CLICK MULTIPLIER UPGRADE -->
             <div class="shop-item multiplier">
                 <div class="item-details">
@@ -115,4 +168,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-

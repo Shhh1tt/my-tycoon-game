@@ -14,11 +14,11 @@ body {
 
 .game-dashboard {
     display: grid;
-    grid-template-columns: 290px 1fr 340px;
+    grid-template-columns: 310px 1fr 360px;
     gap: 20px;
     width: 100%;
-    max-width: 1250px;
-    height: 88vh;
+    max-width: 1300px;
+    height: 90vh;
 }
 
 .panel {
@@ -38,75 +38,142 @@ h1, h2, h3 {
 
 .stat-box {
     background-color: #1e2235;
-    padding: 15px;
+    padding: 12px 15px;
     border-radius: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     border-left: 4px solid #00f0ff;
 }
 
 .label {
-    font-size: 12px;
+    font-size: 11px;
     color: #8a9fc4;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin: 0 0 5px 0;
+    margin: 0 0 3px 0;
 }
 
 .value {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
     margin: 0;
     color: #fff;
 }
 
 .value-sub {
-    font-size: 15px;
-    margin: 4px 0;
+    font-size: 14px;
+    margin: 3px 0;
     color: #a5b4fc;
 }
 
-/* Crypto/Stock Section */
-.market-box {
-    background: #1e2235;
+/* Prestige Panel UI */
+.prestige-box {
+    background: #22162b;
     padding: 15px;
     border-radius: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
+    border: 1px solid #4a154b;
+}
+
+.prestige-box h3 {
+    font-size: 15px;
+    color: #ff00ea;
+    margin-bottom: 6px;
+}
+
+.prestige-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin: 8px 0;
+}
+
+.prestige-core-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.prestige-core-btn.locked {
+    background: #322538;
+    color: #63526e;
+    cursor: not-allowed;
+}
+
+.prestige-core-btn.ready {
+    background: linear-gradient(135deg, #ff00ea 0%, #00f0ff 100%);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 234, 0.4);
+}
+
+/* Expanded Stock Portfolio Rows */
+.market-row {
+    background: #1e2235;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    align-items: center;
     border: 1px solid #2d3450;
 }
 
-.market-box h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
+.market-info {
+    display: flex;
+    flex-direction: column;
 }
 
-.market-stats {
-    display: flex;
-    justify-content: space-between;
+.stock-name {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.stock-price {
     font-size: 14px;
-    margin-bottom: 10px;
+    color: #ffcd00;
+    font-weight: bold;
+    margin-top: 2px;
 }
 
-.market-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.market-btn {
-    flex: 1;
+.market-meta {
     font-size: 12px;
-    padding: 6px;
-    background: #2d3450;
+    color: #8a9fc4;
+    text-align: right;
 }
 
-.market-btn:hover {
-    background: #3c4569;
+.market-trade-btns {
+    grid-column: span 2;
+    display: flex;
+    gap: 6px;
 }
 
+.buy-btn.compact {
+    flex: 1;
+    padding: 5px;
+    font-size: 12px;
+}
+
+.buy-btn.compact.sell {
+    background-color: #2d3450;
+    color: #ff4a4a;
+    border: 1px solid #ff4a4a;
+}
+
+.buy-btn.compact.sell:hover {
+    background-color: #ff4a4a;
+    color: #fff;
+}
+
+/* Utilities */
 .utility-buttons {
     margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .util-btn {
@@ -117,7 +184,6 @@ h1, h2, h3 {
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    transition: opacity 0.2s;
 }
 
 .util-btn.reset {
@@ -125,15 +191,10 @@ h1, h2, h3 {
     color: #ff4a4a;
 }
 
-.util-btn:hover {
-    opacity: 0.9;
-}
-
-/* Main Gameplay Area */
+/* Center Sandbox Display */
 .main-panel {
     text-align: center;
     justify-content: space-between;
-    position: relative;
 }
 
 .subtitle {
@@ -153,8 +214,8 @@ h1, h2, h3 {
     background: radial-gradient(circle, #00f0ff 0%, #0072ff 100%);
     color: white;
     border: none;
-    width: 180px;
-    height: 180px;
+    width: 170px;
+    height: 170px;
     border-radius: 50%;
     font-size: 18px;
     font-weight: bold;
@@ -168,7 +229,6 @@ h1, h2, h3 {
     transform: scale(0.94);
 }
 
-/* Floating Click Numbers Effect */
 .floating-number {
     position: absolute;
     color: #00ff88;
@@ -180,41 +240,34 @@ h1, h2, h3 {
 }
 
 @keyframes floatUp {
-    0% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100px) scale(0.8);
-        opacity: 0;
-    }
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-100px) scale(0.8); opacity: 0; }
 }
 
-/* Achievements Display */
+/* Milestone Cards */
 .achievements-section {
     background: #12141f;
-    padding: 15px;
+    padding: 12px;
     border-radius: 8px;
     text-align: left;
 }
 
 .achievements-section h3 {
-    font-size: 14px;
-    margin-bottom: 8px;
+    font-size: 13px;
+    margin-bottom: 6px;
 }
 
 .achievements-grid {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .ach-card {
     padding: 8px 12px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: bold;
-    transition: all 0.3s;
 }
 
 .ach-card.locked {
@@ -229,18 +282,12 @@ h1, h2, h3 {
     border: 1px solid #00ff88;
 }
 
-/* Shop Upgrades Panel */
+/* Upgrade Shop elements */
 .shop-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     overflow-y: auto;
-}
-
-.divider {
-    border: 0;
-    border-top: 1px solid #23283d;
-    margin: 15px 0;
 }
 
 .shop-item {
@@ -259,12 +306,13 @@ h1, h2, h3 {
 
 .item-name {
     font-weight: bold;
+    font-size: 14px;
 }
 
 .item-cost {
-    font-size: 13px;
+    font-size: 12px;
     color: #8a9fc4;
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 .buy-btn {
@@ -280,4 +328,35 @@ h1, h2, h3 {
 .buy-btn:hover {
     background-color: #0072ff;
     color: white;
+}
+
+/* Offline Welcoming Popup System Modal Window styles */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.85);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 100;
+    transition: opacity 0.3s ease;
+}
+
+.modal-content {
+    background: #161925;
+    padding: 30px;
+    border-radius: 12px;
+    border: 2px solid #00f0ff;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 0 30px rgba(0,240,255,0.2);
+}
+
+.offline-revenue-box {
+    background: #1e2235;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.hidden {
+    display: none !important;
 }
