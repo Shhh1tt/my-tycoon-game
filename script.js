@@ -1,126 +1,227 @@
-// GAME DATA LOGIC ENGINE
-let money = 0;
+// Master Game State Object
+let gameData = {
+    money: 0,
+    moneyPerSecond: 0,
+    moneyPerClick: 1,
+    totalEarned: 0,
+    totalStaff: 0,
+    bonusMultiplier: 1.0, // 1.0 means 100% normal income
 
-// Individual tracking indicators for un-crashable execution
-let aL = 1, aP = 2, aC = 4, aH = false;
-let iL = 0, iP = 20, iC = 50, iH = false;
-let qL = 0, qP = 150, qC = 500, qH = false;
-let sL = 0, sP = 900, sC = 4000, sH = false;
-let cL = 0, cP = 4500, cC = 25000, cH = false;
-let bL = 0, bP = 22000, bC = 150000, bH = false;
+    clickUpgradeCost: 50,
+    devCost: 15,
+    leadCost: 200,
+    serverCost: 1500,
 
-// 1. MANUAL CAPITALS INVOICING 
-function mClk() {
-    money = money + 1;
-    rUI();
-}
-
-// 2. THE MULTIPLIER MATH: DOUBLES REVENUE ON MULTIPLES OF 20
-function gP(lv, base) {
-    let multiplier = Math.pow(2, Math.floor(lv / 20));
-    return lv * base * multiplier;
-}
-
-// 3. MANUAL COMPONENT TRIGGER INTERFACES
-function clA() { if (aL > 0) { money += aP; rUI(); } }
-function clI() { if (iL > 0) { money += iP; rUI(); } }
-function clQ() { if (qL > 0) { money += qP; rUI(); } }
-function clS() { if (sL > 0) { money += sP; rUI(); } }
-function clC() { if (cL > 0) { money += cP; rUI(); } }
-function clB() { if (bL > 0) { money += bP; rUI(); } }
-
-// 4. LEVEL SECTOR UPGRADE SCHEDULERS
-function upA() {
-    if (money >= aC) {
-        money -= aC; aL++;
-        aP = gP(aL, 2); aC = aL * 4;
-        rUI();
+    byteCoinsOwned: 0,
+    achievements: {
+        firstCode: false,
+        techStartup: false,
+        cryptoWhale: false
     }
-}
-function upI() {
-    if (money >= iC) {
-        money -= iC; iL++;
-        iP = gP(iL, 20); iC = iL * 50;
-        document.getElementById("ail").innerHTML = (iL == 1 ? "Upgrade" : "Upgrade") + " <br><span id='ic'>$" + iC + "</span>";
-        rUI();
-    }
-}
-function upQ() {
-    if (money >= qC) {
-        money -= qC; qL++;
-        qP = gP(qL, 150); qC = qL * 500;
-        document.getElementById("ql").innerHTML = (qL == 1 ? "Upgrade" : "Upgrade") + " <br><span id='qc'>$" + qC + "</span>";
-        rUI();
-    }
-}
-function upS() {
-    if (money >= sC) {
-        money -= sC; sL++;
-        sP = gP(sL, 900); sC = sL * 4000;
-        document.getElementById("sl").innerHTML = (sL == 1 ? "Upgrade" : "Upgrade") + " <br><span id='sc'>$" + sC + "</span>";
-        rUI();
-    }
-}
-function upC() {
-    if (money >= cC) {
-        money -= cC; cL++;
-        cP = gP(cL, 4500); cC = cL * 25000;
-        document.getElementById("cl").innerHTML = (cL == 1 ? "Upgrade" : "Upgrade") + " <br><span id='cc'>$" + cC + "</span>";
-        rUI();
-    }
-}
-function upB() {
-    if (money >= bC) {
-        money -= bC; bL++;
-        bP = gP(bL, 22000); bC = bL * 150000;
-        document.getElementById("bln").innerHTML = (bL == 1 ? "Upgrade" : "Upgrade") + " <br><span id='bc'>$" + bC + "</span>";
-        rUI();
-    }
-}
+};
 
-// 5. MANAGERS DELEGATION SYSTEMS
-function hiA() { if (money >= 30 && !aH) { money -= 30; aH = true; rUI(); } }
-function hiI() { if (money >= 250 && !iH && iL > 0) { money -= 250; iH = true; rUI(); } }
-function hiQ() { if (money >= 1200 && !qH && qL > 0) { money -= 1200; qH = true; rUI(); } }
-function hiS() { if (money >= 9500 && !sH && sL > 0) { money -= 9500; sH = true; rUI(); } }
-function hiC() { if (money >= 45000 && !cH && cL > 0) { money -= 45000; cH = true; rUI(); } }
-function hiB() { if (money >= 300000 && !bH && bL > 0) { money -= 300000; bH = true; rUI(); } }
+// Market Engine Variable
+let byteCoinPrice = 100;
 
-// 6. CONTINUOUS RENDER DYNAMIC TICK LOOPS
-function rUI() {
-    document.getElementById("bal").innerText = money;
+// Gather DOM targets
+const moneyDisplay = document.getElementById('money-display');
+const mpsDisplay = document.getElementById('mps-display');
+const mpcDisplay = document.getElementById('mpc-display');
+const bonusDisplay = document.getElementById('bonus-display');
+
+const clickUpgradeCostDisplay = document.getElementById('click-upgrade-cost');
+const devCostDisplay = document.getElementById('dev-cost');
+const leadCostDisplay = document.getElementById('lead-cost');
+const serverCostDisplay = document.getElementById('server-cost');
+
+const coinPriceDisplay = document.getElementById('coin-price');
+const coinOwnedDisplay = document.getElementById('coin-owned');
+
+const clickBtn = document.getElementById('click-btn');
+const actionZone = document.getElementById('action-zone');
+
+// Manual Action + Floating Visual System
+clickBtn.addEventListener('click', (e) => {
+    let earned = Math.floor(gameData.moneyPerClick * gameData.bonusMultiplier);
+    gameData.money += earned;
+    gameData.totalEarned += earned;
     
-    // Updates node labels values text strings
-    document.getElementById("alv").innerText = "Lv." + aL; document.getElementById("ap").innerText = aP; document.getElementById("ac").innerText = "$" + aC;
-    document.getElementById("ilv").innerText = "Lv." + iL; document.getElementById("ip").innerText = iP; document.getElementById("ic").innerText = "$" + iC;
-    document.getElementById("qlv").innerText = "Lv." + qL; document.getElementById("qp").innerText = qP; document.getElementById("qc").innerText = "$" + qC;
-    document.getElementById("slv").innerText = "Lv." + sL; document.getElementById("sp").innerText = sP; document.getElementById("sc").innerText = "$" + sC;
-    document.getElementById("clv").innerText = "Lv." + cL; document.getElementById("cp").innerText = cP; document.getElementById("cc").innerText = "$" + cC;
-    document.getElementById("blv").innerText = "Lv." + bL; document.getElementById("bp").innerText = bP; document.getElementById("bc").innerText = "$" + bC;
-    
-    // Updates automated status badges text values
-    document.getElementById("amg").innerText = aH ? "Auto ✔" : "Manager ($30)"; document.getElementById("amg").style.background = aH ? "#34495e" : "#8e44ad";
-    document.getElementById("img").innerText = iH ? "Auto ✔" : "Manager ($250)"; document.getElementById("img").style.background = iH ? "#34495e" : "#8e44ad";
-    document.getElementById("qmg").innerText = qH ? "Auto ✔" : "Manager ($1200)"; document.getElementById("qmg").style.background = qH ? "#34495e" : "#8e44ad";
-    document.getElementById("smg").innerText = sH ? "Auto ✔" : "Manager ($9500)"; document.getElementById("smg").style.background = sH ? "#34495e" : "#8e44ad";
-    document.getElementById("cmg").innerText = cH ? "Auto ✔" : "Manager ($45000)"; document.getElementById("cmg").style.background = cH ? "#34495e" : "#8e44ad";
-    document.getElementById("bmg").innerText = bH ? "Auto ✔" : "Manager ($300000)"; document.getElementById("bmg").style.background = bH ? "#34495e" : "#8e44ad";
+    createFloatingText(e, `+$${earned}`);
+    checkAchievements();
+    updateDisplay();
+});
 
-    // Dynamic button color highlights loops
-    document.getElementById("u0").style.backgroundColor = money >= aC ? "#27ae60" : "#2c3e50";
-    document.getElementById("ail").style.backgroundColor = money >= iC ? "#27ae60" : "#2c3e50";
-    document.getElementById("ql").style.backgroundColor = money >= qC ? "#27ae60" : "#2c3e50";
-    document.getElementById("sl").style.backgroundColor = money >= sC ? "#27ae60" : "#2c3e50";
-    document.getElementById("cl").style.backgroundColor = money >= cC ? "#27ae60" : "#2c3e50";
-    document.getElementById("bln").style.backgroundColor = money >= bC ? "#27ae60" : "#2c3e50";
+function createFloatingText(e, text) {
+    const floater = document.createElement('div');
+    floater.className = 'floating-number';
+    floater.innerText = text;
+
+    // Calculate coordinate space relative to action-zone
+    const rect = actionZone.getBoundingClientRect();
+    const x = e.clientX - rect.left - 20;
+    const y = e.clientY - rect.top - 20;
+
+    floater.style.left = `${x}px`;
+    floater.style.top = `${y}px`;
+
+    actionZone.appendChild(floater);
+
+    // Wipe from memory after animation ends
+    setTimeout(() => {
+        floater.remove();
+    }, 800);
 }
 
-// 7. CHRONOMETRIC TIMEOUT DELIVERIES
+// Shop Purchasing Logistics
+document.getElementById('buy-click-upgrade-btn').addEventListener('click', () => {
+    if (gameData.money >= gameData.clickUpgradeCost) {
+        gameData.money -= gameData.clickUpgradeCost;
+        gameData.moneyPerClick += 1;
+        gameData.clickUpgradeCost = Math.floor(gameData.clickUpgradeCost * 1.8);
+        updateDisplay();
+    }
+});
+
+document.getElementById('buy-dev-btn').addEventListener('click', () => {
+    if (gameData.money >= gameData.devCost) {
+        gameData.money -= gameData.devCost;
+        gameData.moneyPerSecond += 1;
+        gameData.totalStaff += 1;
+        gameData.devCost = Math.floor(gameData.devCost * 1.5);
+        checkAchievements();
+        updateDisplay();
+    }
+});
+
+document.getElementById('buy-lead-btn').addEventListener('click', () => {
+    if (gameData.money >= gameData.leadCost) {
+        gameData.money -= gameData.leadCost;
+        gameData.moneyPerSecond += 15;
+        gameData.totalStaff += 1;
+        gameData.leadCost = Math.floor(gameData.leadCost * 1.5);
+        checkAchievements();
+        updateDisplay();
+    }
+});
+
+document.getElementById('buy-server-btn').addEventListener('click', () => {
+    if (gameData.money >= gameData.serverCost) {
+        gameData.money -= gameData.serverCost;
+        gameData.moneyPerSecond += 100;
+        gameData.serverCost = Math.floor(gameData.serverCost * 1.6);
+        updateDisplay();
+    }
+});
+
+// ByteCoin Live Crypto Market Mechanics
+document.getElementById('buy-coin-btn').addEventListener('click', () => {
+    if (gameData.money >= byteCoinPrice) {
+        gameData.money -= byteCoinPrice;
+        gameData.byteCoinsOwned += 1;
+        updateDisplay();
+    }
+});
+
+document.getElementById('sell-coin-btn').addEventListener('click', () => {
+    if (gameData.byteCoinsOwned > 0) {
+        let returnCash = gameData.byteCoinsOwned * byteCoinPrice;
+        gameData.money += returnCash;
+        gameData.totalEarned += returnCash;
+        gameData.byteCoinsOwned = 0;
+        checkAchievements();
+        updateDisplay();
+    }
+});
+
+function updateMarketPrice() {
+    // Generate random swing between -25% and +30%
+    let changePercent = (Math.random() * 55 - 25) / 100;
+    byteCoinPrice = Math.floor(byteCoinPrice * (1 + changePercent));
+    
+    // Prevent price crashing to zero
+    if (byteCoinPrice < 10) byteCoinPrice = 10;
+    
+    coinPriceDisplay.innerText = `$${byteCoinPrice}`;
+}
+
+// Accomplishments System
+function checkAchievements() {
+    let unlockedCount = 0;
+
+    if (!gameData.achievements.firstCode && gameData.totalEarned >= 100) {
+        gameData.achievements.firstCode = true;
+    }
+    if (!gameData.achievements.techStartup && gameData.totalStaff >= 5) {
+        gameData.achievements.techStartup = true;
+    }
+    if (!gameData.achievements.cryptoWhale && gameData.totalEarned >= 5000) {
+        gameData.achievements.cryptoWhale = true;
+    }
+
+    // Process unlocked cards styles and bonuses
+    if (gameData.achievements.firstCode) { updateAchCard('ach-1'); unlockedCount++; }
+    if (gameData.achievements.techStartup) { updateAchCard('ach-2'); unlockedCount++; }
+    if (gameData.achievements.cryptoWhale) { updateAchCard('ach-3'); unlockedCount++; }
+
+    // Every unlocked milestone gives +10% boost stacked
+    gameData.bonusMultiplier = 1.0 + (unlockedCount * 0.1);
+}
+
+function updateAchCard(id) {
+    const card = document.getElementById(id);
+    if(card && card.classList.contains('locked')) {
+        card.classList.remove('locked');
+        card.classList.add('unlocked');
+    }
+}
+
+// Render values on elements
+function updateDisplay() {
+    moneyDisplay.innerText = gameData.money;
+    mpsDisplay.innerText = Math.floor(gameData.moneyPerSecond * gameData.bonusMultiplier);
+    mpcDisplay.innerText = Math.floor(gameData.moneyPerClick * gameData.bonusMultiplier);
+    bonusDisplay.innerText = Math.round((gameData.bonusMultiplier - 1) * 100);
+    
+    clickUpgradeCostDisplay.innerText = gameData.clickUpgradeCost;
+    devCostDisplay.innerText = gameData.devCost;
+    leadCostDisplay.innerText = gameData.leadCost;
+    serverCostDisplay.innerText = gameData.serverCost;
+
+    coinOwnedDisplay.innerText = gameData.byteCoinsOwned;
+}
+
+// Core Storage Automation
+document.getElementById('save-btn').addEventListener('click', saveGame);
+document.getElementById('reset-btn').addEventListener('click', () => {
+    if (confirm("Reset company matrix? All progress will disappear!")) {
+        localStorage.removeItem("siliconEmpireProSave");
+        location.reload();
+    }
+});
+
+function saveGame() {
+    localStorage.setItem("siliconEmpireProSave", JSON.stringify(gameData));
+}
+
+function loadGame() {
+    let saved = localStorage.getItem("siliconEmpireProSave");
+    if (saved !== null) {
+        gameData = JSON.parse(saved);
+        checkAchievements();
+        updateDisplay();
+    }
+}
+
+// Core Clock Loops
 setInterval(() => {
-    if (aH) money += aP; if (iH) money += iP; if (qH) money += qP;
-    if (sH) money += sP; if (cH) money += cP; if (bH) money += bP;
-    rUI();
-}, 1000);
+    gameData.money += Math.floor((gameData.moneyPerSecond * gameData.bonusMultiplier) / 10);
+    updateDisplay();
+}, 100); // 10 ticks per second for smooth generation visuals
 
-// Initialize setup state mapping
-rUI();
+setInterval(updateMarketPrice, 4000); // Cryptomarket changes value every 4s
+setInterval(saveGame, 15000);        // Backup auto-save engine running every 15s
+
+// Initialize State Setup
+loadGame();
+updateDisplay();
+

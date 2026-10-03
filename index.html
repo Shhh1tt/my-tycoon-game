@@ -3,115 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Silicon Empire: Tycoon</title>
-    <!-- LINK TO YOUR STYLE.CSS FILE -->
+    <title>Silicon Empire Tycoon Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- 1. MAIN FINANCIAL DASHBOARD -->
-    <div class="dashboard">
-        <p class="ledger-label">TOTAL FINANCIAL CAPITAL</p>
-        <h1 class="balance-display">$<span id="bal">0</span></h1>
-        <button class="manual-click-btn" onclick="mClk()">Click for Manual Income (+$1)</button>
+    <div class="game-dashboard">
+        
+        <!-- COLUMN 1: STATS & UTILITIES -->
+        <aside class="panel side-panel">
+            <h2>📊 Enterprise Stats</h2>
+            <div class="stat-box">
+                <p class="label">Total Net Worth</p>
+                <p class="value">$<span id="money-display">0</span></p>
+            </div>
+            <div class="stat-box">
+                <p class="label">Revenue Stream</p>
+                <p class="value-sub">+$<span id="mps-display">0</span> / sec</p>
+                <p class="value-sub">+$<span id="mpc-display">1</span> / click</p>
+                <p class="value-sub" style="color:#00ff88">Bonus: <span id="bonus-display">0</span>%</p>
+            </div>
+
+            <!-- CRYPTO/STOCK MARKET TERMINAL -->
+            <div class="market-box">
+                <h3>💸 ByteCoin Market</h3>
+                <div class="market-stats">
+                    <p>Price: <span id="coin-price" style="font-weight:bold;color:#ffcd00">$100</span></p>
+                    <p>Owned: <span id="coin-owned">0</span></p>
+                </div>
+                <div class="market-actions">
+                    <button id="buy-coin-btn" class="util-btn market-btn">Buy 1</button>
+                    <button id="sell-coin-btn" class="util-btn market-btn">Sell All</button>
+                </div>
+            </div>
+            
+            <div class="utility-buttons">
+                <button id="save-btn" class="util-btn">💾 Save Game</button>
+                <button id="reset-btn" class="util-btn reset">⚠ Reset Data</button>
+            </div>
+        </aside>
+
+        <!-- COLUMN 2: CORE ACTION & ACHIEVEMENTS -->
+        <main class="panel main-panel">
+            <header>
+                <h1>Silicon Empire Pro</h1>
+                <p class="subtitle">Click to code your way to billions</p>
+            </header>
+            
+            <div class="action-zone" id="action-zone">
+                <button id="click-btn" class="developer-core-btn">
+                    <span class="btn-text">🚀 Develop Software</span>
+                </button>
+            </div>
+
+            <!-- ACHIEVEMENTS SECTION -->
+            <div class="achievements-section">
+                <h3>🏆 Company Milestones (+10% Revenue Each)</h3>
+                <div class="achievements-grid">
+                    <div id="ach-1" class="ach-card locked">💻 First Code ($100 Earned)</div>
+                    <div id="ach-2" class="ach-card locked">👥 Tech Startup (5 Staff Hired)</div>
+                    <div id="ach-3" class="ach-card locked">🐋 Crypto Whale ($5,000 Earned)</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- COLUMN 3: THE EXPANSION SHOP -->
+        <aside class="panel shop-panel">
+            <h2>🛒 Corporate Upgrades</h2>
+            
+            <!-- CLICK MULTIPLIER UPGRADE -->
+            <div class="shop-item multiplier">
+                <div class="item-details">
+                    <span class="item-name">Keyboard Upgrade</span>
+                    <span class="item-cost">Cost: $<span id="click-upgrade-cost">50</span></span>
+                </div>
+                <button id="buy-click-upgrade-btn" class="buy-btn">Upgrade Click (+1)</button>
+            </div>
+
+            <hr class="divider">
+
+            <!-- AUTOMATION SHOP ITEMS -->
+            <div class="shop-list">
+                <div class="shop-item">
+                    <div class="item-details">
+                        <span class="item-name">Junior Developer</span>
+                        <span class="item-cost">Cost: $<span id="dev-cost">15</span></span>
+                    </div>
+                    <button id="buy-dev-btn" class="buy-btn">Hire (+1/s)</button>
+                </div>
+
+                <div class="shop-item">
+                    <div class="item-details">
+                        <span class="item-name">Tech Lead</span>
+                        <span class="item-cost">Cost: $<span id="lead-cost">200</span></span>
+                    </div>
+                    <button id="buy-lead-btn" class="buy-btn">Hire (+15/s)</button>
+                </div>
+
+                <div class="shop-item">
+                    <div class="item-details">
+                        <span class="item-name">AI Compute Server</span>
+                        <span class="item-cost">Cost: $<span id="server-cost">1500</span></span>
+                    </div>
+                    <button id="buy-server-btn" class="buy-btn">Boot Up (+100/s)</button>
+                </div>
+            </div>
+        </aside>
+
     </div>
 
-    <!-- 2. THE TYCOON BUSINESS VENTURES GRID -->
-    <div class="ventures-grid">
-
-        <!-- TIER 1: APP STUDIO -->
-        <div class="venture-card">
-            <div class="venture-info">
-                <button class="work-btn" onclick="clA()">📱</button>
-                <div class="text-details">
-                    <h3>App Studio <span id="alv" class="level-tag">Lv.1</span></h3>
-                    <p>Pays: $<span id="ap">2</span></p>
-                </div>
-            </div>
-            <div class="actions-panel">
-                <button id="u0" class="upgrade-btn" onclick="upA()">Upgrade<br><span id="ac">$4</span></button>
-                <button id="amg" class="manager-btn" onclick="hiA()">Manager ($30)</button>
-            </div>
-        </div>
-
-        <!-- TIER 2: AI RESEARCH -->
-        <div class="venture-card">
-            <div class="venture-info">
-                <button class="work-btn" onclick="clI()">🤖</button>
-                <div class="text-details">
-                    <h3>AI Research <span id="ilv" class="level-tag">Lv.0</span></h3>
-                    <p>Pays: $<span id="ip">0</span></p>
-                </div>
-            </div>
-            <div class="actions-panel">
-                <button id="ail" class="upgrade-btn" onclick="upI()">Unlock Node<br><span id="ic">$50</span></button>
-                <button id="img" class="manager-btn" onclick="hiI()">Manager ($250)</button>
-            </div>
-        </div>
-
-        <!-- TIER 3: QUANTUM LABS -->
-        <div class="venture-card">
-            <div class="venture-info">
-                <button class="work-btn" onclick="clQ()">🧬</button>
-                <div class="text-details">
-                    <h3>Quantum Labs <span id="qlv" class="level-tag">Lv.0</span></h3>
-                    <p>Pays: $<span id="qp">0</span></p>
-                </div>
-            </div>
-            <div class="actions-panel">
-                <button id="ql" class="upgrade-btn" onclick="upQ()">Unlock Node<br><span id="qc">$500</span></button>
-                <button id="qmg" class="manager-btn" onclick="hiQ()">Manager ($1200)</button>
-            </div>
-        </div>
-
-        <!-- TIER 4: SPACE ROCKETS -->
-        <div class="venture-card">
-            <div class="venture-info">
-                <button class="work-btn" onclick="clS()">🚀</button>
-                <div class="text-details">
-                    <h3>Space Rockets <span id="slv" class="level-tag">Lv.0</span></h3>
-                    <p>Pays: $<span id="sp">0</span></p>
-                </div>
-            </div>
-            <div class="actions-panel">
-                <button id="sl" class="upgrade-btn" onclick="upS()">Unlock Node<br><span id="sc">$4000</span></button>
-                <button id="smg" class="manager-btn" onclick="hiS()">Manager ($9500)</button>
-            </div>
-        </div>
-
-        <!-- TIER 5: CYBER SECURITY -->
-        <div class="venture-card">
-            <div class="venture-info">
-                <button class="work-btn" onclick="clC()">🛡️</button>
-                <div class="text-details">
-                    <h3>Cyber Security <span id="clv" class="level-tag">Lv.0</span></h3>
-                    <p>Pays: $<span id="cp">0</span></p>
-                </div>
-            </div>
-            <div class="actions-panel">
-                <button id="cl" class="upgrade-btn" onclick="upC()">Unlock Node<br><span id="cc">$25000</span></button>
-                <button id="cmg" class="manager-btn" onclick="hiC()">Manager ($45000)</button>
-            </div>
-        </div>
-
-        <!-- TIER 6: BIOTECH LABS -->
-        <div class="venture-card">
-            <div class="venture-info">
-                <button class="work-btn" onclick="clB()">🔬</button>
-                <div class="text-details">
-                    <h3>BioTech Labs <span id="blv" class="level-tag">Lv.0</span></h3>
-                    <p>Pays: $<span id="bp">0</span></p>
-                </div>
-            </div>
-            <div class="actions-panel">
-                <button id="bln" class="upgrade-btn" onclick="upB()">Unlock Node<br><span id="bc">$150000</span></button>
-                <button id="bmg" class="manager-btn" onclick="hiB()">Manager ($300000)</button>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- LINK TO YOUR SCRIPT.JS FILE -->
     <script src="script.js"></script>
 </body>
 </html>
+
